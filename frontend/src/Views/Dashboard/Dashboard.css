@@ -1,0 +1,14 @@
+.dashboardBody{
+    width: 100vw;
+    height: 100vh;
+    
+    display: flex;
+
+}
+
+.dashboardRightSide{
+    font-family: poppins_regular;
+
+    width: 100%;
+    padding: 2rem 4rem;
+}
