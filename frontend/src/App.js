@@ -3,9 +3,9 @@ import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Login from "./Views/Login/Login";
 import Register from "./Views/Register/Register";
-import Dashboard from './Views/Dashboard/MyExpenses';
-import SharedExpenses from "./Views/Dashboard/SharedExpenses";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Dashboard from "./Views/Dashboard/MyExpenses";
+import MyIncomes from "./Views/Dashboard/MyIncomes";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
@@ -27,8 +27,8 @@ function App() {
           <Dashboard />
         </Route>
 
-        <Route exact path="/sharedexpenses/:mode">
-          <SharedExpenses />
+        <Route exact path="/myincomes/:mode">
+          <MyIncomes />
         </Route>
       </Switch>
     </BrowserRouter>

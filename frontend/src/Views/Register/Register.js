@@ -22,7 +22,7 @@ const Register = () => {
       });
 
       Swal.fire({
-        title: "Email or password is incorrect!",
+        title: "User registered successfully!",
         icon: "success",
       });
       history.push("/login")

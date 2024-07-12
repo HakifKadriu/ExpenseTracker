@@ -1,44 +1,32 @@
 import React, { useEffect, useState } from "react";
-import "./Dashboard.css";
+import "./MyIncomes.css";
 import api from "../../api";
 import Sidebar from "../Sidebar/Sidebar";
 import Table from "react-bootstrap/Table";
 import Globalfunctions from "../../globalfunctions";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
+import Button from "react-bootstrap/Button";
 
-// todo
-// create shared expeses page
-// token validation
-// test income updating
-// income page
-// filtering and pagination
-// css rework
-// login reword (email required)
-// check all the functions again, remove the comments
-
-const Dashboard = () => {
+const IncomesDashboard = () => {
   const { mode } = useParams();
   const {
-    getUserExpenses,
-    deleteExpense,
-    createExpense,
-    editExpense,
+    getUserIncomes,
+    deleteIncome,
+    createIncome,
+    editIncome,
     getCurrentUser,
-    // getSingleExpense,
   } = Globalfunctions();
 
-  const [privateExpenses, setPrivateExpenses] = useState([]);
-  const [sharedExpenses, setSharedExpenses] = useState([]);
+  const [privateIncomes, setPrivateIncomes] = useState([]);
+  const [sharedIncomes, setSharedIncomes] = useState([]);
   const [show, setShow] = useState(false);
-  const [isEditing, setisEditing] = useState(false);
-  const [tempUser, settempUser] = useState("");
-  const [currentUserUsername, setcurrentUserUsername] = useState("");
-  const [tempExpenseId, settempExpenseId] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempUser, setTempUser] = useState("");
+  const [currentUserUsername, setCurrentUserUsername] = useState("");
+  const [tempIncomeId, setTempIncomeId] = useState("");
 
-  const [userId, setcurrentUserId] = useState(localStorage.getItem("userID"));
+  const [userId, setCurrentUserId] = useState(localStorage.getItem("userID"));
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState(0);
   const [date, setDate] = useState("");
@@ -58,7 +46,7 @@ const Dashboard = () => {
     }
   };
 
-  const sortedPrivateExpenses = [...privateExpenses].sort((a, b) => {
+  const sortedPrivateIncomes = [...privateIncomes].sort((a, b) => {
     switch (sortKey) {
       case "description":
         return sortOrder * a.description.localeCompare(b.description);
@@ -75,7 +63,7 @@ const Dashboard = () => {
     }
   });
 
-  const sortedSharedExpenses = [...sharedExpenses].sort((a, b) => {
+  const sortedSharedIncomes = [...sharedIncomes].sort((a, b) => {
     switch (sortKey) {
       case "description":
         return sortOrder * a.description.localeCompare(b.description);
@@ -93,76 +81,69 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    getUserExpenses()
-      .then((result) => {
-        setPrivateExpenses(result.privateExpenses);
-        setSharedExpenses(result.sharedExpenses);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+    fetchIncomes();
   }, []);
+
+  const fetchIncomes = async () => {
+    try {
+      const result = await getUserIncomes();
+      setPrivateIncomes(result.privateIncomes);
+      setSharedIncomes(result.sharedIncomes);
+      console.log("Fetched Incomes: ", result); // Debug log
+    } catch (error) {
+      console.error("Error fetching incomes: ", error.message);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const expenseData = {
+    const incomeData = {
       userId,
-      expenseId: tempExpenseId,
+      incomeId: tempIncomeId,
       description,
       amount,
       date,
       category,
-      isShared: isShared,
+      isShared,
       sharedWith: isShared ? sharedWith : [],
     };
 
-    if (isEditing) {
-      try {
-        await editExpense(expenseData);
-      } catch (err) {
-        Swal.fire({
-          title: "Error!",
-          text: err.response.data.message,
-          icon: "error",
-        });
+    try {
+      let response;
+      if (isEditing) {
+        response = await editIncome(incomeData);
+      } else {
+        response = await createIncome(incomeData);
       }
-    } else {
-      await createExpense(expenseData);
+      console.log("API Response: ", response); // Debug log
+      setShow(false);
+      clearIncomeInfo();
+      fetchIncomes(); // Fetch latest incomes after update
+    } catch (err) {
+      Swal.fire({
+        title: "Error!",
+        text: err.response.data.message,
+        icon: "error",
+      });
     }
-
-    setShow(false);
-    clearExpenseInfo();
-    setTimer();
   };
 
-  const clearExpenseInfo = () => {
+  const clearIncomeInfo = () => {
     setDescription("");
     setAmount(0);
     setDate("");
     setCategory("");
     setIsShared(false);
     setSharedWith([]);
-    setisEditing(false);
-    settempExpenseId("");
+    setIsEditing(false);
+    setTempIncomeId("");
   };
 
-  const setTimer = () => {
-    setTimeout(() => {
-      getUserExpenses()
-        .then((result) => {
-          setPrivateExpenses(result.privateExpenses);
-          setSharedExpenses(result.sharedExpenses);
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
-    }, 750);
-  };
-
-  const getSingleExpense = async (expenseId) => {
+  const getSingleIncome = async (incomeId) => {
     try {
-      const response = await api.get("/expense/" + expenseId);
+      const response = await api.get("/income/" + incomeId);
+      console.log("Single Income: ", response.data); // Debug log
 
       if (response.data) {
         setDescription(response.data.description);
@@ -171,12 +152,12 @@ const Dashboard = () => {
         setCategory(response.data.category);
         setIsShared(response.data.isShared);
         setSharedWith(response.data.sharedWith.map((user) => user.username));
-        settempExpenseId(response.data._id);
+        setTempIncomeId(response.data._id);
         setShow(true);
-        setisEditing(true);
+        setIsEditing(true);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching single income: ", error.response.data);
     }
   };
 
@@ -186,53 +167,37 @@ const Dashboard = () => {
 
   return (
     <div className="dashboardBody">
-      <Sidebar></Sidebar>
+      <Sidebar />
       <div className="dashboardRightSide">
         <h2 style={{ alignSelf: "center" }}>
-          {mode == "private" ? "Private Expenses" : "Shared Expenses"}
+          {mode === "private" ? "Private Incomes" : "Shared Incomes"}
         </h2>
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              <th onClick={() => handleSort("description")}>
-                Description{" "}
-                {sortKey === "description" ? (sortOrder === 1 ? "⬆" : "⬇") : ""}
-              </th>
-              <th onClick={() => handleSort("amount")}>
-                Amount{" "}
-                {sortKey === "amount" ? (sortOrder === 1 ? "⬆" : "⬇") : ""}
-              </th>
-              <th onClick={() => handleSort("date")}>
-                Date {sortKey === "date" ? (sortOrder === 1 ? "⬆" : "⬇") : ""}
-              </th>
-              <th onClick={() => handleSort("category")}>
-                Category{" "}
-                {sortKey === "category" ? (sortOrder === 1 ? "⬆" : "⬇") : ""}
-              </th>
+              <th onClick={() => handleSort("description")}>Description</th>
+              <th onClick={() => handleSort("amount")}>Amount</th>
+              <th onClick={() => handleSort("date")}>Date</th>
+              <th onClick={() => handleSort("category")}>Category</th>
               <th onClick={() => handleSort("lastUpdatedOn")}>
-                Last Updated On{" "}
-                {sortKey === "lastUpdatedOn"
-                  ? sortOrder === 1
-                    ? "⬆"
-                    : "⬇"
-                  : ""}
+                Last Updated On
               </th>
-              {mode == "shared" && <th>Participants</th>}
+              {mode === "shared" && <th>Participants</th>}
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {mode == "private"
-              ? sortedPrivateExpenses?.map((expense) => (
-                  <tr key={expense.id}>
-                    <td>{expense.description}</td>
-                    <td>{expense.amount}</td>
-                    <td>{new Date(expense.date).toLocaleDateString()}</td>
-                    <td>{expense.category}</td>
+            {mode === "private"
+              ? sortedPrivateIncomes?.map((income) => (
+                  <tr key={income.id}>
+                    <td>{income.description}</td>
+                    <td>{income.amount}</td>
+                    <td>{new Date(income.date).toLocaleDateString()}</td>
+                    <td>{income.category}</td>
                     <td>
-                      {expense.updatedAt.split("T")[0] +
+                      {income.updatedAt.split("T")[0] +
                         "\n" +
-                        expense.updatedAt.split("T")[1].split(".")[0]}
+                        income.updatedAt.split("T")[1].split(".")[0]}
                     </td>
                     <td
                       style={{
@@ -243,34 +208,34 @@ const Dashboard = () => {
                     >
                       <i
                         className="bi bi-trash dashboardActionIcons"
-                        onClick={() => {
-                          deleteExpense(expense._id);
-                          setTimer();
+                        onClick={async () => {
+                          await deleteIncome(income._id);
+                          fetchIncomes(); // Fetch incomes after delete
                         }}
                       ></i>
                       <i
                         className="bi bi-pencil-square dashboardActionIcons"
                         onClick={async () => {
-                          await getSingleExpense(expense._id);
+                          await getSingleIncome(income._id);
                           setShow(true);
                         }}
                       ></i>
                     </td>
                   </tr>
                 ))
-              : sortedSharedExpenses?.map((expense) => (
-                  <tr key={expense.id}>
-                    <td>{expense.description}</td>
-                    <td>{expense.amount}</td>
-                    <td>{new Date(expense.date).toLocaleDateString()}</td>
-                    <td>{expense.category}</td>
+              : sortedSharedIncomes?.map((income) => (
+                  <tr key={income.id}>
+                    <td>{income.description}</td>
+                    <td>{income.amount}</td>
+                    <td>{new Date(income.date).toLocaleDateString()}</td>
+                    <td>{income.category}</td>
                     <td>
-                      {expense.updatedAt.split("T")[0] +
+                      {income.updatedAt.split("T")[0] +
                         "\n" +
-                        expense.updatedAt.split("T")[1].split(".")[0]}
+                        income.updatedAt.split("T")[1].split(".")[0]}
                     </td>
                     <td>
-                      {expense.sharedWith
+                      {income.sharedWith
                         .map((user) => user.username)
                         .join(", ")}
                     </td>
@@ -283,15 +248,16 @@ const Dashboard = () => {
                     >
                       <i
                         className="bi bi-trash dashboardActionIcons"
-                        onClick={() => {
-                          deleteExpense(expense._id);
-                          setTimer();
+                        onClick={async () => {
+                          await deleteIncome(income._id);
+                          fetchIncomes(); // Fetch incomes after delete
                         }}
                       ></i>
                       <i
                         className="bi bi-pencil-square dashboardActionIcons"
                         onClick={async () => {
-                          await getSingleExpense(expense._id);
+                          await getSingleIncome(income._id);
+                          setShow(true);
                         }}
                       ></i>
                     </td>
@@ -300,21 +266,20 @@ const Dashboard = () => {
           </tbody>
         </Table>
       </div>
-
       <div
         className="dashboardAddExpenseButton"
         onClick={() => {
           setShow(true);
         }}
       >
-        Add Expense <i className="bi bi-plus-circle"></i>
+        Add Income <i className="bi bi-plus-circle"></i>
       </div>
 
-      {show ? (
+      {show && (
         <div className="modal-overlay">
           <div className="modal-container">
             <div className="modal-header">
-              {isEditing ? <h2>Edit Expense</h2> : <h2>Create Expense</h2>}
+              {isEditing ? <h2>Edit Income</h2> : <h2>Create Income</h2>}
             </div>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
@@ -357,12 +322,12 @@ const Dashboard = () => {
               </div>
               <div className="form-group">
                 <label>
+                  Shared
                   <input
                     type="checkbox"
                     checked={isShared}
-                    onChange={() => setIsShared(!isShared)}
+                    onChange={(e) => setIsShared(e.target.checked)}
                   />
-                  Share with others
                 </label>
               </div>
               {isShared && (
@@ -372,14 +337,13 @@ const Dashboard = () => {
                       type="text"
                       placeholder="Username"
                       value={tempUser}
-                      onChange={(e) => settempUser(e.target.value)}
-                      // style={{width: "90%"}}
+                      onChange={(e) => setTempUser(e.target.value)}
                     />
                     <button
                       type="button"
                       onClick={() => {
                         setSharedWith([...sharedWith, tempUser]);
-                        settempUser("");
+                        setTempUser("");
                       }}
                       style={{
                         width: "fit-content",
@@ -422,27 +386,26 @@ const Dashboard = () => {
                   </div>
                 </>
               )}
-              <div className="form-actions">
-                <button type="submit">Save</button>
-                <button
-                  type="button"
+              <div className="modal-footer">
+                <Button
+                  variant="secondary"
                   onClick={() => {
+                    clearIncomeInfo();
                     setShow(false);
-                    setisEditing(false);
-                    clearExpenseInfo();
                   }}
                 >
-                  Cancel
-                </button>
+                  Close
+                </Button>
+                <Button variant="primary" type="submit">
+                  Save Changes
+                </Button>
               </div>
             </form>
           </div>
         </div>
-      ) : (
-        ""
       )}
     </div>
   );
 };
 
-export default Dashboard;
+export default IncomesDashboard;

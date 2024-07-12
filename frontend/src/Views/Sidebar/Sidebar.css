@@ -1,8 +1,7 @@
-.sidebarBody {
+/* .sidebarBody {
   background-color: #8697c4;
   width: 15rem;
   height: 100%;
-  /* position: fixed; */
   padding: 0 0.5rem;
 
   display: flex;
@@ -10,10 +9,8 @@
 }
 
 .sidebarExpenses {
-  /* border: 1px solid black; */
   padding: 0.3rem 0.5rem;
   border-radius: 10px;
-  /* background-color: #3d52A0; */
   font-family: poppins_bold;
   font-size: 1.1rem;
   color: white;
@@ -27,7 +24,6 @@
 
 .sidebarLogout{
     height: 100%;
-    /* align-self: flex-end; */
     display: flex;
     align-items: end;
     margin-bottom: 1rem;
@@ -36,9 +32,63 @@
 .sidebarUsername{
     font-family: "poppins_medium"; 
     color: white;
-    /* border: 1px solid black; */
     height: 4rem;
 
     padding-top: 1rem;
     text-align: center;
+} */
+
+
+.sidebar {
+  /* position: fixed; */
+  width: 250px;
+  background-color: #333;
+  color: #fff;
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.sidebar-links {
+  width: 100%;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 1rem;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-link:hover {
+  background-color: #555;
+}
+
+.sidebar-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.sidebar-logout {
+  margin-top: auto;
+  padding: 1rem;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  border-top: 1px solid #555;
+}
+
+.sidebar-logout:hover {
+  background-color: #555;
 }

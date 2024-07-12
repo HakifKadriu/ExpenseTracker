@@ -7,6 +7,8 @@ const User = new Schema({
   password: { type: String, required: true },
   privateExpenses: [{ type: Schema.Types.ObjectId, ref: 'expenseModel' }],
   sharedExpenses: [{ type: Schema.Types.ObjectId, ref: "expenseModel" }],
+  privateIncomes: [{ type: Schema.Types.ObjectId, ref: "Income" }],
+  sharedIncomes: [{ type: Schema.Types.ObjectId, ref: "Income" }],
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });

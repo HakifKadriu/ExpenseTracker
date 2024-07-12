@@ -76,13 +76,22 @@ const getExpensesByUserId = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Assuming the username is stored in user.username
+    const username = user.username;
+
+    // Filter shared expenses to include only those where the current user is a participant
+    const filteredSharedExpenses = user.sharedExpenses.filter((expense) =>
+      expense.sharedWith.some(
+        (participant) => participant.username === username
+      )
+    );
 
     res.status(200).json({
       privateExpenses: user.privateExpenses,
-      sharedExpenses: user.sharedExpenses,
+      sharedExpenses: filteredSharedExpenses,
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -119,8 +128,8 @@ const getAllExpenses = async (req, res) => {
 };
 
 const updateExpense = async (req, res) => {
-  const { userId, description, amount, date, category, isShared, sharedWith } =
-    req.body;
+  let { userId, description, amount, date, category, isShared, sharedWith } =
+    req.body; // Change `const` to `let`
   const { id: expenseId } = req.params;
 
   try {
@@ -129,33 +138,71 @@ const updateExpense = async (req, res) => {
       return res.status(404).json({ message: "Expense not found" });
     }
 
-    expense.description = description;
-    expense.amount = amount;
-    expense.date = date;
-    expense.category = category;
-    expense.isShared = isShared;
-    expense.sharedWith = isShared ? sharedWith : [];
-
-    const updatedExpense = await expense.save();
-
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Ensure the current user's username is added to sharedWith if the expense is shared
+    if (isShared && !sharedWith.includes(user.username)) {
+      sharedWith.push(user.username);
+    }
+
+    // Convert sharedWith usernames to ObjectIds
+    let sharedWithIds = [];
+    if (isShared && sharedWith.length > 0) {
+      const users = await User.find({ username: { $in: sharedWith } });
+      sharedWithIds = users.map((user) => user._id);
+    }
+
+    // Check if the sharedWith array contains only the current user
+    if (sharedWithIds.length === 1 && sharedWithIds[0].toString() === userId) {
+      expense.isShared = false;
+      expense.sharedWith = [];
+      isShared = false; // Update isShared to reflect the change in the expense
+    } else {
+      expense.isShared = isShared;
+      expense.sharedWith = sharedWithIds;
+    }
+
+    expense.description = description;
+    expense.amount = amount;
+    expense.date = date;
+    expense.category = category;
+
+    const updatedExpense = await expense.save();
+
     if (isShared) {
+      // Remove from privateExpenses if it exists
+      user.privateExpenses = user.privateExpenses.filter(
+        (id) => id.toString() !== expenseId
+      );
+      // Add to sharedExpenses if not already present
       if (!user.sharedExpenses.includes(expenseId)) {
         user.sharedExpenses.push(expenseId);
       }
-      if (sharedWith && sharedWith.length > 0) {
+      // Add the expense to each user in sharedWith
+      if (sharedWithIds && sharedWithIds.length > 0) {
         await User.updateMany(
-          { _id: { $in: sharedWith } },
+          { _id: { $in: sharedWithIds } },
           { $addToSet: { sharedExpenses: expenseId } }
         );
       }
     } else {
+      // Remove from sharedExpenses if it exists
+      user.sharedExpenses = user.sharedExpenses.filter(
+        (id) => id.toString() !== expenseId
+      );
+      // Add to privateExpenses if not already present
       if (!user.privateExpenses.includes(expenseId)) {
         user.privateExpenses.push(expenseId);
+      }
+      // Remove the expense from sharedExpenses of users in sharedWith
+      if (expense.sharedWith.length > 0) {
+        await User.updateMany(
+          { _id: { $in: expense.sharedWith } },
+          { $pull: { sharedExpenses: expenseId } }
+        );
       }
     }
 
