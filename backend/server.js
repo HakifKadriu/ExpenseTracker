@@ -16,6 +16,8 @@ const userRoutes = require('./Routes/user');
 app.use('/user', userRoutes);
 const expenseRoutes = require('./Routes/expense');
 app.use('/expense', expenseRoutes);
+const incomeRoutes = require('./Routes/income.js');
+app.use('/income', incomeRoutes);
 
 
 app.use(express.static("public"));

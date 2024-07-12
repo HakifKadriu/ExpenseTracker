@@ -3,7 +3,8 @@ import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Login from "./Views/Login/Login";
 import Register from "./Views/Register/Register";
-import Dashboard from './Views/Dashboard/Dashboard';
+import Dashboard from './Views/Dashboard/MyExpenses';
+import SharedExpenses from "./Views/Dashboard/SharedExpenses";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -22,8 +23,12 @@ function App() {
           <Login />
         </Route>
 
-        <Route exact path="/myexpenses">
+        <Route exact path="/myexpenses/:mode">
           <Dashboard />
+        </Route>
+
+        <Route exact path="/sharedexpenses/:mode">
+          <SharedExpenses />
         </Route>
       </Switch>
     </BrowserRouter>

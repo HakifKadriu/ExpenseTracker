@@ -2,30 +2,22 @@ import React, { useEffect, useState } from "react";
 import "./Sidebar.css";
 import api from "../../api";
 import { useHistory } from "react-router-dom";
+import Globalfunctions from "../../globalfunctions";
 
 const Sidebar = () => {
-  const history = useHistory();
-
+  const { handleLogout, getCurrentUser } = Globalfunctions();
   const [currentUser, setcurrentUser] = useState([]);
 
-  const getUserInfo = async (event) => {
-    try {
-      const response = await api.get("/user/" + localStorage.getItem("userID"));
-
-      setcurrentUser(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleLogout = async () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userID");
-    history.push("/login");
-  };
+  const history = useHistory();
 
   useEffect(() => {
-    getUserInfo();
+    getCurrentUser()
+      .then((result) => {
+        setcurrentUser(result);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   }, []);
 
   return (
@@ -42,16 +34,22 @@ const Sidebar = () => {
         }}
       ></div>
       <div>
-        <p className="sidebarExpenses">
+        <p
+          className="sidebarExpenses"
+          onClick={() => history.push("/myexpenses/private")}
+        >
           {" "}
           <i className="bi bi-person-fill"></i> My Expenses
         </p>
-        <p className="sidebarExpenses">
+        <p
+          className="sidebarExpenses"
+          onClick={() => history.push("/myexpenses/shared")}
+        >
           {" "}
           <i className="bi bi-people-fill"></i> Shared
         </p>
       </div>
-      <div className="sidebarLogout" >
+      <div className="sidebarLogout">
         <p className="sidebarExpenses" onClick={handleLogout}>
           <i className="bi bi-box-arrow-right"></i> Log Out
         </p>

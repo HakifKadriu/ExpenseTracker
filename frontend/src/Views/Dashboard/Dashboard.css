@@ -12,3 +12,97 @@
     width: 100%;
     padding: 2rem 4rem;
 }
+
+.dashboardActionIcons:hover{
+    cursor: pointer;
+    /* border: 1px solid black; */
+}
+
+.dashboardAddExpenseButton{
+    position: absolute;
+    bottom:0;
+    right:0;
+
+    margin-bottom: 50px;
+    margin-right: 60px;
+    padding: 0.5rem 1rem;
+
+    border: 1px solid #3d52A0;
+    border-radius: 5px;
+    background-color: #7091e6;
+    color: white;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 100%;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .form-actions button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .form-actions button[type="submit"] {
+    background: #007bff;
+    color: white;
+  }
+  
+  .form-actions button[type="button"] {
+    background: #ccc;
+  }
+  

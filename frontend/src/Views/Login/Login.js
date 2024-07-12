@@ -10,6 +10,12 @@ const Login = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
 
+  useEffect(() => {
+    if(localStorage.getItem("token")){
+      history.push("/myexpenses/private")
+    }
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -22,7 +28,7 @@ const Login = () => {
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("userID", response.data.userId);
-      history.push("/myexpenses");
+      history.push("/myexpenses/private");
 
     } catch (error) {
       Swal.fire({
