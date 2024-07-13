@@ -9,16 +9,6 @@ import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 
-// todo
-// create shared expeses page
-// token validation
-// test income updating
-// income page
-// filtering and pagination
-// css rework
-// login reword (email required)
-// check all the functions again, remove the comments
-
 const Dashboard = () => {
   const { mode } = useParams();
   const {
@@ -27,7 +17,6 @@ const Dashboard = () => {
     createExpense,
     editExpense,
     getCurrentUser,
-    // getSingleExpense,
   } = Globalfunctions();
 
   const [privateExpenses, setPrivateExpenses] = useState([]);
@@ -51,10 +40,10 @@ const Dashboard = () => {
 
   const handleSort = (key) => {
     if (sortKey === key) {
-      setSortOrder(-sortOrder); // Reverse sort order if same key clicked again
+      setSortOrder(-sortOrder); // asc -> -sortorder = desc
     } else {
       setSortKey(key);
-      setSortOrder(1); // Default to ascending order on first click
+      setSortOrder(1); // Default to ascending 
     }
   };
 
@@ -360,12 +349,13 @@ const Dashboard = () => {
               </div>
               <div className="form-group">
                 <label>
+                  Shared
                   <input
                     type="checkbox"
+                    style={{marginLeft: '10px'}}
                     checked={isShared}
                     onChange={() => setIsShared(!isShared)}
                   />
-                  Share with others
                 </label>
               </div>
               {isShared && (
@@ -400,7 +390,7 @@ const Dashboard = () => {
                       height: "10rem",
                     }}
                   >
-                    {sharedWith?.map((user, index) => (
+                    {[...new Set(sharedWith)].map((user, index) => (
                       <p
                         key={index}
                         style={{
@@ -425,18 +415,25 @@ const Dashboard = () => {
                   </div>
                 </>
               )}
-              <div className="form-actions">
-                <button type="submit">Save</button>
-                <button
-                  type="button"
+              <div className="form-actions" style={{marginTop: '10px'}}>
+                <Button
+                  // variant="light"
+                  size="sm"
+                  style={{
+                    backgroundColor: "white",
+                    color: "black",
+                    border: "1px solid black",
+                  }}
                   onClick={() => {
-                    setShow(false);
-                    setisEditing(false);
                     clearExpenseInfo();
+                    setShow(false);
                   }}
                 >
-                  Cancel
-                </button>
+                  Close
+                </Button>
+                <Button style={{backgroundColor: "#333"}} size="sm" type="submit">
+                  {isEditing ? ("Save Changes") : ("Create")}
+                </Button>
               </div>
             </form>
           </div>

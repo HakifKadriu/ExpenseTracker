@@ -39,10 +39,10 @@ const IncomesDashboard = () => {
 
   const handleSort = (key) => {
     if (sortKey === key) {
-      setSortOrder(-sortOrder); // Reverse sort order if same key clicked again
+      setSortOrder(-sortOrder); // asc -> -sortorder = desc
     } else {
       setSortKey(key);
-      setSortOrder(1); // Default to ascending order on first click
+      setSortOrder(1); // Default to ascending 
     }
   };
 
@@ -82,6 +82,9 @@ const IncomesDashboard = () => {
 
   useEffect(() => {
     fetchIncomes();
+    getCurrentUser().then((result) => {
+      setCurrentUserUsername(result.username);
+    })
   }, []);
 
   const fetchIncomes = async () => {
@@ -89,7 +92,6 @@ const IncomesDashboard = () => {
       const result = await getUserIncomes();
       setPrivateIncomes(result.privateIncomes);
       setSharedIncomes(result.sharedIncomes);
-      console.log("Fetched Incomes: ", result); // Debug log
     } catch (error) {
       console.error("Error fetching incomes: ", error.message);
     }
@@ -116,10 +118,9 @@ const IncomesDashboard = () => {
       } else {
         response = await createIncome(incomeData);
       }
-      console.log("API Response: ", response); // Debug log
       setShow(false);
       clearIncomeInfo();
-      fetchIncomes(); // Fetch latest incomes after update
+      fetchIncomes(); 
     } catch (err) {
       Swal.fire({
         title: "Error!",
@@ -143,7 +144,6 @@ const IncomesDashboard = () => {
   const getSingleIncome = async (incomeId) => {
     try {
       const response = await api.get("/income/" + incomeId);
-      console.log("Single Income: ", response.data); // Debug log
 
       if (response.data) {
         setDescription(response.data.description);
@@ -210,7 +210,7 @@ const IncomesDashboard = () => {
                         className="bi bi-trash dashboardActionIcons"
                         onClick={async () => {
                           await deleteIncome(income._id);
-                          fetchIncomes(); // Fetch incomes after delete
+                          fetchIncomes(); 
                         }}
                       ></i>
                       <i
@@ -253,7 +253,7 @@ const IncomesDashboard = () => {
                         className="bi bi-trash dashboardActionIcons"
                         onClick={async () => {
                           await deleteIncome(income._id);
-                          fetchIncomes(); // Fetch incomes after delete
+                          fetchIncomes(); 
                         }}
                       ></i>
                       <i
@@ -327,6 +327,7 @@ const IncomesDashboard = () => {
                 <label>
                   Shared
                   <input
+                    style={{ marginLeft: "10px" }}
                     type="checkbox"
                     checked={isShared}
                     onChange={(e) => setIsShared(e.target.checked)}
@@ -360,11 +361,13 @@ const IncomesDashboard = () => {
                   <div
                     style={{
                       border: "1px solid black",
+                      borderRadius: '5px',
+                      padding: '10px',
                       overflowY: "scroll",
                       height: "10rem",
                     }}
                   >
-                    {sharedWith?.map((user, index) => (
+                    {[...new Set(sharedWith)].map((user, index) => (
                       <p
                         key={index}
                         style={{
@@ -375,6 +378,7 @@ const IncomesDashboard = () => {
                           display: "flex",
                           justifyContent: "space-between",
                           width: "95%",
+                          fontWeight: 'bold'
                         }}
                       >
                         {user}
@@ -389,9 +393,14 @@ const IncomesDashboard = () => {
                   </div>
                 </>
               )}
-              <div className="modal-footer">
+              <div className="modal-footer" style={{ gap: "5px", marginTop: '10px' }}>
                 <Button
-                  variant="secondary"
+                  // variant="light"
+                  style={{
+                    backgroundColor: "white",
+                    color: "black",
+                    border: "1px solid black",
+                  }}
                   onClick={() => {
                     clearIncomeInfo();
                     setShow(false);
@@ -399,8 +408,8 @@ const IncomesDashboard = () => {
                 >
                   Close
                 </Button>
-                <Button variant="primary" type="submit">
-                  Save Changes
+                <Button variant="dark" type="submit" >
+                  {isEditing ? ("Save Changes") : ("Create")}
                 </Button>
               </div>
             </form>

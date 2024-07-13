@@ -11,12 +11,10 @@ const createExpense = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Ensure the current user's username is added to sharedWith if the expense is shared
     if (isShared && !sharedWith.includes(user.username)) {
       sharedWith.push(user.username);
     }
 
-    // Convert usernames to ObjectIds
     let sharedWithIds = [];
     let updatedSharedWith = [];
     if (isShared && sharedWith && sharedWith.length > 0) {
@@ -24,7 +22,6 @@ const createExpense = async (req, res) => {
       sharedWithIds = sharedUsers.map((user) => user._id);
       updatedSharedWith = [user._id, ...sharedWithIds];
 
-      // Check if all usernames were found
       if (sharedWith.length !== sharedWithIds.length) {
         return res.status(400).json({ message: "One or more users not found" });
       }
@@ -41,7 +38,6 @@ const createExpense = async (req, res) => {
 
     const savedExpense = await newExpense.save();
 
-    // Add the expense to the user's private or shared expenses
     if (isShared) {
       if (!sharedWith.includes(user.username)) {
         user.sharedExpenses.push(savedExpense._id);
@@ -84,10 +80,8 @@ const getExpensesByUserId = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Assuming the username is stored in user.username
     const username = user.username;
 
-    // Filter shared expenses to include only those where the current user is a participant
     const filteredSharedExpenses = user.sharedExpenses.filter((expense) =>
       expense.sharedWith.some(
         (participant) => participant.username === username
@@ -137,7 +131,7 @@ const getAllExpenses = async (req, res) => {
 
 const updateExpense = async (req, res) => {
   let { userId, description, amount, date, category, isShared, sharedWith } =
-    req.body; // Change `const` to `let`
+    req.body; 
   const { id: expenseId } = req.params;
 
   try {
@@ -151,14 +145,12 @@ const updateExpense = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Convert sharedWith usernames to ObjectIds
     let sharedWithIds = [];
     if (isShared && sharedWith.length > 0) {
       const users = await User.find({ username: { $in: sharedWith } });
       sharedWithIds = users.map((user) => user._id);
     }
 
-    // Check if the sharedWith array contains only the current user
     if (sharedWithIds.length === 1 && sharedWithIds[0].toString() === userId) {
       expense.isShared = false;
       expense.sharedWith = [];
@@ -176,15 +168,12 @@ const updateExpense = async (req, res) => {
     const updatedExpense = await expense.save();
 
     if (isShared) {
-      // Remove from privateExpenses if it exists
       user.privateExpenses = user.privateExpenses.filter(
         (id) => id.toString() !== expenseId
       );
-      // Add to sharedExpenses if not already present
       if (!user.sharedExpenses.includes(expenseId)) {
         user.sharedExpenses.push(expenseId);
       }
-      // Add the expense to each user in sharedWith
       if (sharedWithIds && sharedWithIds.length > 0) {
         await User.updateMany(
           { _id: { $in: sharedWithIds } },
@@ -192,15 +181,12 @@ const updateExpense = async (req, res) => {
         );
       }
     } else {
-      // Remove from sharedExpenses if it exists
       user.sharedExpenses = user.sharedExpenses.filter(
         (id) => id.toString() !== expenseId
       );
-      // Add to privateExpenses if not already present
       if (!user.privateExpenses.includes(expenseId)) {
         user.privateExpenses.push(expenseId);
       }
-      // Remove the expense from sharedExpenses of users in sharedWith
       if (expense.sharedWith.length > 0) {
         await User.updateMany(
           { _id: { $in: expense.sharedWith } },
@@ -229,7 +215,6 @@ const deleteExpense = async (req, res) => {
       return res.status(404).json({ message: "Expense not found" });
     }
 
-    // Remove the expense from users' shared expenses
     if (expense.isShared && expense.sharedWith.length > 0) {
       await User.updateMany(
         { _id: { $in: expense.sharedWith } },
@@ -237,7 +222,6 @@ const deleteExpense = async (req, res) => {
       );
     }
 
-    // Remove the expense from the user's private expenses
     await User.updateOne(
       { privateExpenses: expenseId },
       { $pull: { privateExpenses: expenseId } }

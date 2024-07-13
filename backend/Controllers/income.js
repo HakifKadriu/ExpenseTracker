@@ -11,7 +11,7 @@ const createIncome = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Ensure the current user's username is added to sharedWith if the income is shared
+    // me shti emrin e current user nparticipants
     if (isShared && !sharedWith.includes(user.username)) {
       sharedWith.push(user.username);
     }
@@ -24,7 +24,6 @@ const createIncome = async (req, res) => {
       sharedWithIds = sharedUsers.map((user) => user._id);
       updatedSharedWith = [user._id, ...sharedWithIds];
 
-      // Check if all usernames were found
       if (sharedWith.length !== sharedWithIds.length) {
         return res.status(400).json({ message: "One or more users not found" });
       }
@@ -41,7 +40,6 @@ const createIncome = async (req, res) => {
 
     const savedIncome = await newIncome.save();
 
-    // Add the income to the user's private or shared incomes only if not already added
     if (isShared) {
       if (!user.sharedIncomes.includes(savedIncome._id)) {
         user.sharedIncomes.push(savedIncome._id);
@@ -71,7 +69,6 @@ const createIncome = async (req, res) => {
 
 const getIncomesByUserId = async (req, res) => {
   const userId = req.params.userId;
-  // console.log(userId);
 
   try {
     const user = await User.findById(userId)
@@ -88,10 +85,9 @@ const getIncomesByUserId = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Assuming the username is stored in user.username
     const username = user.username;
 
-    // Filter shared expenses to include only those where the current user is a participant
+    // merri shared Incomes te cilat useri osht participant
     const filteredSharedIncomes = user.sharedIncomes.filter((expense) =>
       expense.sharedWith.some(
         (participant) => participant.username === username
@@ -100,7 +96,7 @@ const getIncomesByUserId = async (req, res) => {
 
     res.status(200).json({
       privateIncomes: user.privateIncomes,
-      sharedIncomes: user.sharedIncomes,
+      sharedIncomes: filteredSharedIncomes,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -155,18 +151,31 @@ const updateIncome = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // // Check if current user's username needs to be added to sharedWith
+    // if (isShared && !sharedWith.includes(user.username)) {
+    //   sharedWith.push(user.username);
+    // }
+
     // Convert sharedWith usernames to ObjectIds
     let sharedWithIds = [];
     if (isShared && sharedWith.length > 0) {
       const users = await User.find({ username: { $in: sharedWith } });
       sharedWithIds = users.map((user) => user._id);
+      // console.log(sharedWithIds);
     }
 
-    // Check if the sharedWith array contains only the current user
+    // nese participant osht vetem currentUser atehere bone privat
     if (sharedWithIds.length === 1 && sharedWithIds[0].toString() === userId) {
       income.isShared = false;
       income.sharedWith = [];
-      isShared = false; // Update isShared to reflect the change in the income
+      isShared = false;
+    } else if (
+      sharedWithIds.length === 1 &&
+      !sharedWithIds[0].toString() === userId
+    ) {
+      sharedWithIds= [...sharedWithIds, userId];
+    } else if (isShared && !sharedWithIds[0].toString() === userId) {
+      sharedWithIds = sharedWithIds.filter((id) => id.toString() !== userId);
     } else {
       income.isShared = isShared;
       income.sharedWith = sharedWithIds;
@@ -179,15 +188,16 @@ const updateIncome = async (req, res) => {
 
     const updatedIncome = await income.save();
 
-    // Update user's income arrays based on isShared status
+    // nese ni private income e bajna edit ne isShared=true atehere zhvendose ne shared incomes
     if (isShared) {
+      income.sharedWith = sharedWithIds;
       user.privateIncomes = user.privateIncomes.filter(
         (id) => id.toString() !== incomeId
       );
       if (!user.sharedIncomes.includes(incomeId)) {
-        user.sharedIncomes.push(incomeId);
+        user.sharedIncomes = [...user.sharedIncomes, incomeId];
       }
-      // Update sharedIncomes for sharedWith users
+
       if (sharedWithIds.length > 0) {
         await User.updateMany(
           { _id: { $in: sharedWithIds } },
@@ -201,7 +211,6 @@ const updateIncome = async (req, res) => {
       if (!user.privateIncomes.includes(incomeId)) {
         user.privateIncomes.push(incomeId);
       }
-      // Remove the income from sharedIncomes of users in sharedWith
       if (income.sharedWith.length > 0) {
         await User.updateMany(
           { _id: { $in: income.sharedWith } },
@@ -230,7 +239,6 @@ const deleteIncome = async (req, res) => {
       return res.status(404).json({ message: "Income not found" });
     }
 
-    // Remove the expense from users' shared expenses
     if (income.isShared && income.sharedWith.length > 0) {
       await User.updateMany(
         { _id: { $in: income.sharedWith } },
@@ -238,7 +246,6 @@ const deleteIncome = async (req, res) => {
       );
     }
 
-    // Remove the expense from the user's private expenses
     await User.updateOne(
       { privateIncomes: incomeId },
       { $pull: { privateIncomes: incomeId } }
