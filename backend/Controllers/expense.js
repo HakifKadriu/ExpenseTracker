@@ -11,6 +11,11 @@ const createExpense = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Ensure the current user's username is added to sharedWith if the expense is shared
+    if (isShared && !sharedWith.includes(user.username)) {
+      sharedWith.push(user.username);
+    }
+
     // Convert usernames to ObjectIds
     let sharedWithIds = [];
     let updatedSharedWith = [];
@@ -38,18 +43,21 @@ const createExpense = async (req, res) => {
 
     // Add the expense to the user's private or shared expenses
     if (isShared) {
-      user.sharedExpenses.push(savedExpense._id);
+      if (!sharedWith.includes(user.username)) {
+        user.sharedExpenses.push(savedExpense._id);
+        await user.save();
+      }
+
       if (sharedWithIds && sharedWithIds.length > 0) {
         await User.updateMany(
           { _id: { $in: sharedWithIds } },
-          { $push: { sharedExpenses: savedExpense._id } }
+          { $addToSet: { sharedExpenses: savedExpense._id } }
         );
       }
     } else {
       user.privateExpenses.push(savedExpense._id);
+      await user.save();
     }
-
-    await user.save();
 
     res
       .status(201)
@@ -141,11 +149,6 @@ const updateExpense = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
-    }
-
-    // Ensure the current user's username is added to sharedWith if the expense is shared
-    if (isShared && !sharedWith.includes(user.username)) {
-      sharedWith.push(user.username);
     }
 
     // Convert sharedWith usernames to ObjectIds

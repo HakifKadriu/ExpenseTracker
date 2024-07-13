@@ -235,9 +235,12 @@ const IncomesDashboard = () => {
                         income.updatedAt.split("T")[1].split(".")[0]}
                     </td>
                     <td>
-                      {income.sharedWith
-                        .map((user) => user.username)
-                        .join(", ")}
+                      {/* Ensure unique usernames in sharedWith */}
+                      {[
+                        ...new Set(
+                          income.sharedWith.map((user) => user.username)
+                        ),
+                      ].join(", ")}
                     </td>
                     <td
                       style={{

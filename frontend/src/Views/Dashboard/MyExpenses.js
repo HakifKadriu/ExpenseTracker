@@ -270,9 +270,12 @@ const Dashboard = () => {
                         expense.updatedAt.split("T")[1].split(".")[0]}
                     </td>
                     <td>
-                      {expense.sharedWith
-                        .map((user) => user.username)
-                        .join(", ")}
+                      {/* Ensure unique usernames in sharedWith */}
+                      {[
+                        ...new Set(
+                          expense.sharedWith.map((user) => user.username)
+                        ),
+                      ].join(", ")}
                     </td>
                     <td
                       style={{
