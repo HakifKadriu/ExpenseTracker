@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/ExpenseTracker/static/css/main.a10bace3.css",
+    "main.js": "/ExpenseTracker/static/js/main.50de9fd3.js",
+    "static/js/453.8ab44547.chunk.js": "/ExpenseTracker/static/js/453.8ab44547.chunk.js",
+    "static/media/Poppins-Light.ttf": "/ExpenseTracker/static/media/Poppins-Light.7641a0f76ca9ef6c252c.ttf",
+    "static/media/Poppins-Regular.ttf": "/ExpenseTracker/static/media/Poppins-Regular.35d26b781dc5fda684cc.ttf",
+    "static/media/Poppins-Medium.ttf": "/ExpenseTracker/static/media/Poppins-Medium.673ed42382ab264e0bf5.ttf",
+    "static/media/Poppins-Bold.ttf": "/ExpenseTracker/static/media/Poppins-Bold.cdb29a5d7ccf57ff05a3.ttf",
+    "static/media/Poppins-Black.ttf": "/ExpenseTracker/static/media/Poppins-Black.d8b850b920a5ef49d752.ttf",
+    "static/media/background.jpg": "/ExpenseTracker/static/media/background.24c88ae5b47b2bb8f2f2.jpg",
+    "index.html": "/ExpenseTracker/index.html",
+    "main.a10bace3.css.map": "/ExpenseTracker/static/css/main.a10bace3.css.map",
+    "main.50de9fd3.js.map": "/ExpenseTracker/static/js/main.50de9fd3.js.map",
+    "453.8ab44547.chunk.js.map": "/ExpenseTracker/static/js/453.8ab44547.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a10bace3.css",
+    "static/js/main.50de9fd3.js"
+  ]
+}
