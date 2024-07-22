@@ -42,7 +42,7 @@ const IncomesDashboard = () => {
       setSortOrder(-sortOrder); // asc -> -sortorder = desc
     } else {
       setSortKey(key);
-      setSortOrder(1); // Default to ascending 
+      setSortOrder(1); // Default to ascending
     }
   };
 
@@ -84,8 +84,14 @@ const IncomesDashboard = () => {
     fetchIncomes();
     getCurrentUser().then((result) => {
       setCurrentUserUsername(result.username);
-    })
-  }, []);
+    });
+
+    if (sharedWith.length === 0) {
+      setIsShared(false);
+    } else {
+      setIsShared(true);
+    }
+  }, [sharedWith]);
 
   const fetchIncomes = async () => {
     try {
@@ -107,7 +113,7 @@ const IncomesDashboard = () => {
       amount,
       date,
       category,
-      isShared,
+      isShared: sharedWith.length > 0,
       sharedWith: isShared ? sharedWith : [],
     };
 
@@ -120,7 +126,7 @@ const IncomesDashboard = () => {
       }
       setShow(false);
       clearIncomeInfo();
-      fetchIncomes(); 
+      fetchIncomes();
     } catch (err) {
       Swal.fire({
         title: "Error!",
@@ -165,6 +171,16 @@ const IncomesDashboard = () => {
     setSharedWith(sharedWith.filter((user) => user !== username));
   };
 
+  const checkIfEnteronArray = (e) => {
+    const { value } = e.target;
+    if (e.key === "Enter") {
+      e.preventDefault();
+
+      setSharedWith([...sharedWith, tempUser]);
+      setTempUser("");
+    }
+  };
+
   return (
     <div className="dashboardBody">
       <Sidebar />
@@ -183,7 +199,7 @@ const IncomesDashboard = () => {
                 Last Updated On
               </th>
               {mode === "shared" && <th>Participants</th>}
-              <th>Actions</th>
+              <th style={{ textAlign: "center" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -210,7 +226,7 @@ const IncomesDashboard = () => {
                         className="bi bi-trash dashboardActionIcons"
                         onClick={async () => {
                           await deleteIncome(income._id);
-                          fetchIncomes(); 
+                          fetchIncomes();
                         }}
                       ></i>
                       <i
@@ -253,7 +269,7 @@ const IncomesDashboard = () => {
                         className="bi bi-trash dashboardActionIcons"
                         onClick={async () => {
                           await deleteIncome(income._id);
-                          fetchIncomes(); 
+                          fetchIncomes();
                         }}
                       ></i>
                       <i
@@ -323,16 +339,22 @@ const IncomesDashboard = () => {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label>
-                  Shared
-                  <input
-                    style={{ marginLeft: "10px" }}
-                    type="checkbox"
-                    checked={isShared}
-                    onChange={(e) => setIsShared(e.target.checked)}
-                  />
-                </label>
+              <div className="form-group" style={{ display: "flex" }}>
+                <label>Shared</label>
+                <input
+                  type="checkbox"
+                  style={{
+                    marginLeft: "10px",
+                    marginBottom: "5px",
+                    marginRight: "10px",
+                  }}
+                  checked={isShared}
+                  onChange={() => setIsShared(!isShared)}
+                />
+                <i
+                  className="bi bi-info-circle"
+                  title="Check this button when you want to share this with other users.&#013;First you include your own username then click Add User or press Enter.&#013;Then you can add other users by their username. If the username doesnt exist, the user wont get added."
+                ></i>
               </div>
               {isShared && (
                 <>
@@ -342,6 +364,11 @@ const IncomesDashboard = () => {
                       placeholder="Username"
                       value={tempUser}
                       onChange={(e) => setTempUser(e.target.value)}
+                      style={{
+                        borderTopRightRadius: 0,
+                        borderBottomRightRadius: 0,
+                      }}
+                      onKeyDown={(e) => checkIfEnteronArray(e)}
                     />
                     <button
                       type="button"
@@ -352,6 +379,8 @@ const IncomesDashboard = () => {
                       style={{
                         width: "fit-content",
                         border: "1px solid black",
+                        borderTopRightRadius: "10px",
+                        borderBottomRightRadius: "10px",
                       }}
                     >
                       Add User
@@ -361,26 +390,15 @@ const IncomesDashboard = () => {
                   <div
                     style={{
                       border: "1px solid black",
-                      borderRadius: '5px',
-                      padding: '10px',
+                      borderRadius: "5px",
+                      padding: "10px",
                       overflowY: "scroll",
                       height: "10rem",
+                      scrollSnapType: "y proximity"
                     }}
                   >
                     {[...new Set(sharedWith)].map((user, index) => (
-                      <p
-                        key={index}
-                        style={{
-                          borderBottom: "1px solid black",
-                          width: "fit-content",
-                          height: "fit-content",
-                          margin: "5px",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          width: "95%",
-                          fontWeight: 'bold'
-                        }}
-                      >
+                      <p key={index} className="sharedWithUsers">
                         {user}
                         <i
                           className="bi bi-trash dashboardActionIcons"
@@ -393,7 +411,10 @@ const IncomesDashboard = () => {
                   </div>
                 </>
               )}
-              <div className="modal-footer" style={{ gap: "5px", marginTop: '10px' }}>
+              <div
+                className="modal-footer"
+                style={{ gap: "5px", marginTop: "10px" }}
+              >
                 <Button
                   // variant="light"
                   style={{
@@ -408,8 +429,8 @@ const IncomesDashboard = () => {
                 >
                   Close
                 </Button>
-                <Button variant="dark" type="submit" >
-                  {isEditing ? ("Save Changes") : ("Create")}
+                <Button variant="dark" type="submit">
+                  {isEditing ? "Save Changes" : "Create"}
                 </Button>
               </div>
             </form>

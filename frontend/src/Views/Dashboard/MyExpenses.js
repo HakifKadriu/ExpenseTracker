@@ -43,7 +43,7 @@ const Dashboard = () => {
       setSortOrder(-sortOrder); // asc -> -sortorder = desc
     } else {
       setSortKey(key);
-      setSortOrder(1); // Default to ascending 
+      setSortOrder(1); // Default to ascending
     }
   };
 
@@ -90,10 +90,19 @@ const Dashboard = () => {
       .catch((error) => {
         console.log(error.message);
       });
-  }, []);
+
+    if (sharedWith.length === 0) {
+      setIsShared(false);
+    } else {
+      setIsShared(true);
+    }
+  }, [sharedWith]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // mi hjek duplicates
+    // const uniqueSharedWith = [...new Set(sharedWith)];
 
     const expenseData = {
       userId,
@@ -102,7 +111,7 @@ const Dashboard = () => {
       amount,
       date,
       category,
-      isShared: isShared,
+      isShared: sharedWith.length > 0,
       sharedWith: isShared ? sharedWith : [],
     };
 
@@ -347,16 +356,22 @@ const Dashboard = () => {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label>
-                  Shared
-                  <input
-                    type="checkbox"
-                    style={{marginLeft: '10px'}}
-                    checked={isShared}
-                    onChange={() => setIsShared(!isShared)}
-                  />
-                </label>
+              <div className="form-group" style={{ display: "flex" }}>
+                <label>Shared</label>
+                <input
+                  type="checkbox"
+                  style={{
+                    marginLeft: "10px",
+                    marginBottom: "5px",
+                    marginRight: "10px",
+                  }}
+                  checked={isShared}
+                  onChange={() => setIsShared(!isShared)}
+                />
+                <i
+                  className="bi bi-info-circle"
+                  title="Check this button when you want to share this with other users.&#013;First you include your own username then click Add User or press Enter.&#013;Then you can add other users by their username. If the username doesnt exist, the user wont get added."
+                ></i>
               </div>
               {isShared && (
                 <>
@@ -366,7 +381,7 @@ const Dashboard = () => {
                       placeholder="Username"
                       value={tempUser}
                       onChange={(e) => settempUser(e.target.value)}
-                      // style={{width: "90%"}}
+                      style={{borderTopRightRadius: 0, borderBottomRightRadius: 0}}
                     />
                     <button
                       type="button"
@@ -415,7 +430,7 @@ const Dashboard = () => {
                   </div>
                 </>
               )}
-              <div className="form-actions" style={{marginTop: '10px'}}>
+              <div className="form-actions" style={{ marginTop: "10px" }}>
                 <Button
                   // variant="light"
                   size="sm"
@@ -431,8 +446,12 @@ const Dashboard = () => {
                 >
                   Close
                 </Button>
-                <Button style={{backgroundColor: "#333"}} size="sm" type="submit">
-                  {isEditing ? ("Save Changes") : ("Create")}
+                <Button
+                  style={{ backgroundColor: "#333" }}
+                  size="sm"
+                  type="submit"
+                >
+                  {isEditing ? "Save Changes" : "Create"}
                 </Button>
               </div>
             </form>

@@ -28,6 +28,7 @@ const Sidebar = () => {
         <span>{currentUser.username}</span>
       </div>
       <div className="sidebar-links">
+        <hr></hr>
         <Link className="sidebar-link" to="/myexpenses/private">
           Private Expenses
         </Link>
@@ -41,6 +42,7 @@ const Sidebar = () => {
         <Link className="sidebar-link" to="/myincomes/shared">
           Shared Incomes
         </Link>
+        <hr></hr>
       </div>
       <div className="sidebar-logout" onClick={handleLogout}>
         Log Out

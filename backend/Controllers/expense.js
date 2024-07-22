@@ -131,7 +131,7 @@ const getAllExpenses = async (req, res) => {
 
 const updateExpense = async (req, res) => {
   let { userId, description, amount, date, category, isShared, sharedWith } =
-    req.body; 
+    req.body;
   const { id: expenseId } = req.params;
 
   try {
@@ -146,6 +146,11 @@ const updateExpense = async (req, res) => {
     }
 
     let sharedWithIds = [];
+    if (isShared && sharedWith == []) {
+      expense.isShared = false;
+      expense.sharedWith = [];
+    }
+
     if (isShared && sharedWith.length > 0) {
       const users = await User.find({ username: { $in: sharedWith } });
       sharedWithIds = users.map((user) => user._id);
@@ -167,14 +172,17 @@ const updateExpense = async (req, res) => {
 
     const updatedExpense = await expense.save();
 
+    // nese ni private income e bajna edit ne isShared=true atehere zhvendose ne shared incomes
     if (isShared) {
+      expense.sharedWith = sharedWithIds;
       user.privateExpenses = user.privateExpenses.filter(
         (id) => id.toString() !== expenseId
       );
       if (!user.sharedExpenses.includes(expenseId)) {
-        user.sharedExpenses.push(expenseId);
+        user.sharedExpenses = [...user.sharedExpenses, expenseId];
       }
-      if (sharedWithIds && sharedWithIds.length > 0) {
+
+      if (sharedWithIds.length > 0) {
         await User.updateMany(
           { _id: { $in: sharedWithIds } },
           { $addToSet: { sharedExpenses: expenseId } }
@@ -189,7 +197,7 @@ const updateExpense = async (req, res) => {
       }
       if (expense.sharedWith.length > 0) {
         await User.updateMany(
-          { _id: { $in: expense.sharedWith } },
+          { _id: { $in: income.sharedWith } },
           { $pull: { sharedExpenses: expenseId } }
         );
       }

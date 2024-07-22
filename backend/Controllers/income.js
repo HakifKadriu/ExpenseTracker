@@ -169,13 +169,6 @@ const updateIncome = async (req, res) => {
       income.isShared = false;
       income.sharedWith = [];
       isShared = false;
-    } else if (
-      sharedWithIds.length === 1 &&
-      !sharedWithIds[0].toString() === userId
-    ) {
-      sharedWithIds= [...sharedWithIds, userId];
-    } else if (isShared && !sharedWithIds[0].toString() === userId) {
-      sharedWithIds = sharedWithIds.filter((id) => id.toString() !== userId);
     } else {
       income.isShared = isShared;
       income.sharedWith = sharedWithIds;
