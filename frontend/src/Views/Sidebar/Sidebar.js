@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Sidebar.css";
-import api from "../../api";
 import { useHistory, Link } from "react-router-dom";
 import Globalfunctions from "../../globalfunctions";
 
@@ -8,7 +7,6 @@ const Sidebar = () => {
   const { handleLogout, getCurrentUser } = Globalfunctions();
   const [currentUser, setcurrentUser] = useState([]);
 
-  const history = useHistory();
 
   useEffect(() => {
     getCurrentUser()

@@ -15,6 +15,10 @@ function App() {
           <Login />
         </Route>
 
+        <Route exact path="/ExpenseTracker">
+          <Login />
+        </Route>
+
         <Route exact path="/register">
           <Register />
         </Route>

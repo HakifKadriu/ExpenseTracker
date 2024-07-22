@@ -20,7 +20,7 @@ const Globalfunctions = () => {
     } catch (error) {
       console.log("Error getting custom users");
     }
-  }, []);
+  });
 
   const getUserExpenses = useCallback(async () => {
     try {

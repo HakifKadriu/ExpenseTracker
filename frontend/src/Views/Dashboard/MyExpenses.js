@@ -4,7 +4,6 @@ import api from "../../api";
 import Sidebar from "../Sidebar/Sidebar";
 import Table from "react-bootstrap/Table";
 import Globalfunctions from "../../globalfunctions";
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
@@ -16,7 +15,6 @@ const Dashboard = () => {
     deleteExpense,
     createExpense,
     editExpense,
-    getCurrentUser,
   } = Globalfunctions();
 
   const [privateExpenses, setPrivateExpenses] = useState([]);
@@ -24,7 +22,7 @@ const Dashboard = () => {
   const [show, setShow] = useState(false);
   const [isEditing, setisEditing] = useState(false);
   const [tempUser, settempUser] = useState("");
-  const [currentUserUsername, setcurrentUserUsername] = useState("");
+  // const [currentUserUsername, setcurrentUserUsername] = useState("");
   const [tempExpenseId, settempExpenseId] = useState("");
 
   const [userId, setcurrentUserId] = useState(localStorage.getItem("userID"));
@@ -187,7 +185,7 @@ const Dashboard = () => {
       <Sidebar></Sidebar>
       <div className="dashboardRightSide">
         <h2 style={{ alignSelf: "center" }}>
-          {mode == "private" ? "Private Expenses" : "Shared Expenses"}
+          {mode === "private" ? "Private Expenses" : "Shared Expenses"}
         </h2>
         <Table striped bordered hover responsive>
           <thead>
@@ -215,12 +213,12 @@ const Dashboard = () => {
                     : "⬇"
                   : ""}
               </th>
-              {mode == "shared" && <th>Participants</th>}
+              {mode === "shared" && <th>Participants</th>}
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {mode == "private"
+            {mode === "private"
               ? sortedPrivateExpenses?.map((expense) => (
                   <tr key={expense.id}>
                     <td>{expense.description}</td>
@@ -415,7 +413,6 @@ const Dashboard = () => {
                           margin: "5px",
                           display: "flex",
                           justifyContent: "space-between",
-                          width: "95%",
                         }}
                       >
                         {user}

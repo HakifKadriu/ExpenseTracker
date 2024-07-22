@@ -14,7 +14,7 @@ const Login = () => {
     if(localStorage.getItem("token")){
       history.push("/myexpenses/private")
     }
-  }, []);
+  }, [history]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

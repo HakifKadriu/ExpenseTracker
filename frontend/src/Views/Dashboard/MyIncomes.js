@@ -15,7 +15,6 @@ const IncomesDashboard = () => {
     deleteIncome,
     createIncome,
     editIncome,
-    getCurrentUser,
   } = Globalfunctions();
 
   const [privateIncomes, setPrivateIncomes] = useState([]);
@@ -23,7 +22,7 @@ const IncomesDashboard = () => {
   const [show, setShow] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [tempUser, setTempUser] = useState("");
-  const [currentUserUsername, setCurrentUserUsername] = useState("");
+  // const [currentUserUsername, setCurrentUserUsername] = useState("");
   const [tempIncomeId, setTempIncomeId] = useState("");
 
   const [userId, setCurrentUserId] = useState(localStorage.getItem("userID"));
@@ -82,9 +81,6 @@ const IncomesDashboard = () => {
 
   useEffect(() => {
     fetchIncomes();
-    getCurrentUser().then((result) => {
-      setCurrentUserUsername(result.username);
-    });
 
     if (sharedWith.length === 0) {
       setIsShared(false);
@@ -172,7 +168,6 @@ const IncomesDashboard = () => {
   };
 
   const checkIfEnteronArray = (e) => {
-    const { value } = e.target;
     if (e.key === "Enter") {
       e.preventDefault();
 
