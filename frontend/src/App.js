@@ -11,7 +11,7 @@ function App() {
   return (
     <BrowserRouter>
       <Switch>
-        <Route exact path="/">
+        <Route exact path="/ExpenseTracker/">
           <Login />
         </Route>
 
@@ -19,19 +19,19 @@ function App() {
           <Login />
         </Route>
 
-        <Route exact path="/register">
+        <Route exact path="/ExpenseTracker/register">
           <Register />
         </Route>
 
-        <Route exact path="/login">
+        <Route exact path="/ExpenseTracker/login">
           <Login />
         </Route>
 
-        <Route exact path="/myexpenses/:mode">
+        <Route exact path="/ExpenseTracker/myexpenses/:mode">
           <Dashboard />
         </Route>
 
-        <Route exact path="/myincomes/:mode">
+        <Route exact path="/ExpenseTracker/myincomes/:mode">
           <MyIncomes />
         </Route>
       </Switch>
