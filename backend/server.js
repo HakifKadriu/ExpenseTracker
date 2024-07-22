@@ -8,17 +8,22 @@ const connectDB = require("./connectdb.js");
 const mongoURI =
   "mongodb+srv://hakifkadriu:hakifkadriu@expensetracker.31h8d27.mongodb.net/?retryWrites=true&w=majority&appName=ExpenseTracker";
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://expensetracker-nkp3.onrender.com", // or '*' to allow all origins (not recommended for production)
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 //Routes
-const userRoutes = require('./Routes/user');
-app.use('/user', userRoutes);
-const expenseRoutes = require('./Routes/expense');
-app.use('/expense', expenseRoutes);
-const incomeRoutes = require('./Routes/income.js');
-app.use('/income', incomeRoutes);
-
+const userRoutes = require("./Routes/user");
+app.use("/user", userRoutes);
+const expenseRoutes = require("./Routes/expense");
+app.use("/expense", expenseRoutes);
+const incomeRoutes = require("./Routes/income.js");
+app.use("/income", incomeRoutes);
 
 app.use(express.static("public"));
 
