@@ -23,7 +23,7 @@ const Sidebar = () => {
       <div className="sidebar-logo">ExpenseTracker</div>
       <div className="sidebar-user">
         <i className="bi bi-person-circle"></i>
-        <span>{currentUser.username}</span>
+        <span>{currentUser?.username}</span>
       </div>
       <div className="sidebar-links">
         <hr></hr>

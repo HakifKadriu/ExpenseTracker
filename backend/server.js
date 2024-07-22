@@ -8,9 +8,21 @@ const connectDB = require("./connectdb.js");
 const mongoURI =
   "mongodb+srv://hakifkadriu:hakifkadriu@expensetracker.31h8d27.mongodb.net/?retryWrites=true&w=majority&appName=ExpenseTracker";
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://hakifkadriu.github.io",
+  "https://expensetracker-nkp3.onrender.com",
+];
+
 app.use(
   cors({
-    origin: "https://expensetracker-nkp3.onrender.com", // or '*' to allow all origins (not recommended for production)
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
