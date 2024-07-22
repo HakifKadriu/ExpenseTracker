@@ -25,7 +25,7 @@ const Register = () => {
         title: "User registered successfully!",
         icon: "success",
       });
-      history.push("/login")
+      history.push("/ExpenseTracker/login")
     } catch (error) {
       Swal.fire({
         title: "User already exists!",
@@ -79,7 +79,7 @@ const Register = () => {
             }}
           >
             Already have an account?{" "}
-            <span onClick={() => history.push("/login")} style={{cursor: 'pointer'}}>Log In</span>
+            <span onClick={() => history.push("/ExpenseTracker/login")} style={{cursor: 'pointer'}}>Log In</span>
           </p>
 
           <button

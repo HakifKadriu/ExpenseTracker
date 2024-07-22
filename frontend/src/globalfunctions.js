@@ -9,7 +9,7 @@ const Globalfunctions = () => {
   const handleLogout = useCallback(async () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userID");
-    history.push("/login");
+    history.push("/ExpenseTracker/login");
   }, [history]);
 
   const getCurrentUser = useCallback(async () => {

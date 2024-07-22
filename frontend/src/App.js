@@ -5,6 +5,7 @@ import Login from "./Views/Login/Login";
 import Register from "./Views/Register/Register";
 import Dashboard from "./Views/Dashboard/MyExpenses";
 import MyIncomes from "./Views/Dashboard/MyIncomes";
+import Error from "./Views/Error";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
@@ -33,6 +34,10 @@ function App() {
 
         <Route exact path="/ExpenseTracker/myincomes/:mode">
           <MyIncomes />
+        </Route>
+
+        <Route exact path="*">
+          <Error />
         </Route>
       </Switch>
     </BrowserRouter>

@@ -27,17 +27,17 @@ const Sidebar = () => {
       </div>
       <div className="sidebar-links">
         <hr></hr>
-        <Link className="sidebar-link" to="/myexpenses/private">
+        <Link className="sidebar-link" to="/ExpenseTracker/myexpenses/private">
           Private Expenses
         </Link>
-        <Link className="sidebar-link" to="/myexpenses/shared">
+        <Link className="sidebar-link" to="/ExpenseTracker/myexpenses/shared">
           Shared Expenses
         </Link>
         <hr></hr>
-        <Link className="sidebar-link" to="/myincomes/private">
+        <Link className="sidebar-link" to="/ExpenseTracker/myincomes/private">
           Private Incomes
         </Link>
-        <Link className="sidebar-link" to="/myincomes/shared">
+        <Link className="sidebar-link" to="/ExpenseTracker/myincomes/shared">
           Shared Incomes
         </Link>
         <hr></hr>

@@ -12,7 +12,7 @@ const Login = () => {
 
   useEffect(() => {
     if(localStorage.getItem("token")){
-      history.push("/myexpenses/private")
+      history.push("/ExpenseTracker/myexpenses/private")
     }
   }, [history]);
 
@@ -28,7 +28,7 @@ const Login = () => {
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("userID", response.data.userId);
-      history.push("/myexpenses/private");
+      history.push("/ExpenseTracker/myexpenses/private");
 
     } catch (error) {
       Swal.fire({
@@ -72,7 +72,7 @@ const Login = () => {
           >
             Dont have an account?{" "}
             <span
-              onClick={() => history.push("/register")}
+              onClick={() => history.push("/ExpenseTracker/register")}
               style={{ cursor: "pointer" }}
             >
               Register
